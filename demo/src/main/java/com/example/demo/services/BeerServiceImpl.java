@@ -4,6 +4,8 @@ import com.example.demo.model.Beer;
 import com.example.demo.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -61,6 +63,28 @@ public class BeerServiceImpl implements BeerService {
     @Override
     public List<Beer> listBeers() {
         return new ArrayList<>(beerMap.values());
+    }
+
+    @Override
+    public Beer saveNewBeer(Beer beer) {
+
+        Beer savedBeer = Beer.builder()
+                .id(UUID.randomUUID())
+                .version(1)
+                .beerName(beer.getBeerName())
+                .beerStyle(beer.getBeerStyle())
+                .upc(beer.getUpc())
+                .price(beer.getPrice())
+                .quantityOnHand(beer.getQuantityOnHand())
+                .createdDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now())
+                .build();
+
+        System.out.println(savedBeer);
+        System.out.println(beer);
+
+        beerMap.put(savedBeer.getId(), savedBeer);
+        return savedBeer;
     }
 
     @Override
