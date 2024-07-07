@@ -1,4 +1,8 @@
 package com.example.demo.model;
 
-public class BeerStyle {
+public enum BeerStyle {
+    PALE_ALE,
+    PILSENER,
+    IPA,
+    AMBER_ALE,
 }
