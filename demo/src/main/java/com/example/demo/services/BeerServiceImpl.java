@@ -4,6 +4,7 @@ import com.example.demo.model.Beer;
 import com.example.demo.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -97,6 +98,36 @@ public class BeerServiceImpl implements BeerService {
         existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
 
         beerMap.put(existingBeer.getId(), existingBeer);
+    }
+
+    @Override
+    public void deleteBeerById(UUID id) {
+        beerMap.remove(id);
+    }
+
+    @Override
+    public void patchBeerById(UUID id, Beer beer) {
+        Beer existing = beerMap.get(id);
+
+        if (StringUtils.hasText(beer.getBeerName())) {
+            existing.setBeerName(beer.getBeerName());
+        }
+
+        if (beer.getBeerStyle() != null) {
+            existing.setBeerStyle(beer.getBeerStyle());
+        }
+
+        if (beer.getPrice() != null) {
+            existing.setPrice(beer.getPrice());
+        }
+
+        if (beer.getQuantityOnHand() != null) {
+            existing.setQuantityOnHand(beer.getQuantityOnHand());
+        }
+
+        if (StringUtils.hasText(beer.getUpc())) {
+            existing.setUpc(beer.getUpc());
+        }
     }
 
     @Override

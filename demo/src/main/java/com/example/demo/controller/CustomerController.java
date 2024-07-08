@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +18,20 @@ public class CustomerController {
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
+    }
+
+    @PatchMapping("/{customerId}")
+    public ResponseEntity updatePatchCustomerById(@PathVariable UUID customerId, @RequestBody Customer customer) {
+        customerService.updatePatchCustomerById(customerId, customer);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity deleteCustomerById(@PathVariable UUID customerId) {
+        customerService.deleteCustomerById(customerId);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{customerId}")

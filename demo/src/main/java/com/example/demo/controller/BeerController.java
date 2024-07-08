@@ -20,6 +20,21 @@ public class BeerController {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(BeerController.class);
     private final BeerService beerService;
 
+    @PatchMapping("/{beerId}")
+    public ResponseEntity updateBeerPatchById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
+        beerService.patchBeerById(beerId, beer);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{beerId}")
+    public ResponseEntity deleteBeerById(@PathVariable("beerId") UUID beerId) {
+
+        beerService.deleteBeerById(beerId);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
 
     @PutMapping("/{beerId}")
     public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {

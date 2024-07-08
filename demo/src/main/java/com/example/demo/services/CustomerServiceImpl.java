@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.model.Customer;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -72,5 +73,19 @@ public class CustomerServiceImpl implements CustomerService {
         existingCustomer.setLastModifiedDate(LocalDate.now());
 
         customers.put(customer.getId(), existingCustomer);
+    }
+
+    @Override
+    public void deleteCustomerById(UUID customerId) {
+        customers.remove(customerId);
+    }
+
+    @Override
+    public void updatePatchCustomerById(UUID customerId, Customer customer) {
+        Customer existing = customers.get(customerId);
+
+        if (StringUtils.hasText(customer.getName())) {
+            existing.setName(customer.getName());
+        }
     }
 }
