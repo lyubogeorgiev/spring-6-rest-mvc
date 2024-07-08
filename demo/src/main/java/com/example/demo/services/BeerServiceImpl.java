@@ -88,6 +88,18 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
+    public void updateBeerById(UUID id, Beer beer) {
+
+        Beer existingBeer = beerMap.get(id);
+        existingBeer.setBeerName(beer.getBeerName());
+        existingBeer.setUpc(beer.getUpc());
+        existingBeer.setPrice(beer.getPrice());
+        existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+
+        beerMap.put(existingBeer.getId(), existingBeer);
+    }
+
+    @Override
     public Beer getBeerById(UUID id) {
 
         log.debug("Get beer id in service was called.");
