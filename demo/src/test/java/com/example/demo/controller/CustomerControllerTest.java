@@ -1,11 +1,14 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Beer;
 import com.example.demo.model.Customer;
+import com.example.demo.services.BeerServiceImpl;
 import com.example.demo.services.CustomerService;
 import com.example.demo.services.CustomerServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,18 +33,31 @@ class CustomerControllerTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    private MockMvc mvc;
+    private MockMvc mockMvc;
 
     @MockBean
     private CustomerService customerService;
 
     CustomerServiceImpl customerServiceImpl;
-    @Autowired
-    private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() throws Exception {
         customerServiceImpl = new CustomerServiceImpl();
+    }
+
+    @Test
+    void testDeleteCustomer() throws Exception {
+
+        Customer customer = customerServiceImpl.getCustomers().getFirst();
+
+        mockMvc.perform(delete("/api/v1/customers/" + customer.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(customerService).deleteCustomerById(uuidArgumentCaptor.capture());
+
+        assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
     }
 
     @Test
@@ -76,7 +93,7 @@ class CustomerControllerTest {
     void testListCustomers() throws Exception {
         given(customerService.getCustomers()).willReturn(customerServiceImpl.getCustomers());
 
-        mvc.perform(get("/api/v1/customers")
+        mockMvc.perform(get("/api/v1/customers")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
