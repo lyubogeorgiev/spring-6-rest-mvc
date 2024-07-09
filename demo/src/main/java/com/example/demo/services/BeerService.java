@@ -1,17 +1,18 @@
 package com.example.demo.services;
 
-import com.example.demo.model.Beer;
+import com.example.demo.model.BeerDTO;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface BeerService {
 
-    Beer getBeerById(UUID id);
-    List<Beer> listBeers();
+    Optional<BeerDTO> getBeerById(UUID id);
+    List<BeerDTO> listBeers();
 
-    Beer saveNewBeer(Beer beer);
-    void updateBeerById(UUID id, Beer beer);
+    BeerDTO saveNewBeer(BeerDTO beer);
+    void updateBeerById(UUID id, BeerDTO beer);
     void deleteBeerById(UUID id);
-    void patchBeerById(UUID id, Beer beer);
+    void patchBeerById(UUID id, BeerDTO beer);
 }
