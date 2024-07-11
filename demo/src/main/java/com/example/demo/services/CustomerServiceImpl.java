@@ -48,8 +48,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDTO getCustomer(UUID id) {
-        return customers.get(id);
+    public Optional<CustomerDTO> getCustomer(UUID id) {
+        return Optional.of(customers.get(id));
     }
 
     @Override
@@ -87,5 +87,10 @@ public class CustomerServiceImpl implements CustomerService {
         if (StringUtils.hasText(customer.getName())) {
             existing.setName(customer.getName());
         }
+    }
+
+    @Override
+    public void deleteAllCustomers() {
+        customers.clear();
     }
 }

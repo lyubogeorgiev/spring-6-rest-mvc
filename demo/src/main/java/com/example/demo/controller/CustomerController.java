@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.mappers.CustomerMapper;
 import com.example.demo.model.CustomerDTO;
 import com.example.demo.services.CustomerService;
 import org.springframework.http.HttpHeaders;
@@ -15,9 +16,11 @@ import java.util.UUID;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final CustomerMapper customerMapper;
 
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService, CustomerMapper customerMapper) {
         this.customerService = customerService;
+        this.customerMapper = customerMapper;
     }
 
     @PatchMapping("/{customerId}")
@@ -30,6 +33,13 @@ public class CustomerController {
     @DeleteMapping("/{customerId}")
     public ResponseEntity deleteCustomerById(@PathVariable UUID customerId) {
         customerService.deleteCustomerById(customerId);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping
+    public ResponseEntity deleteAllCustomers() {
+        customerService.deleteAllCustomers();
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -61,6 +71,6 @@ public class CustomerController {
 
     @GetMapping("/{customerId}")
     public CustomerDTO getCustomer(@PathVariable("customerId") UUID customerId) {
-        return customerService.getCustomer(customerId);
+        return customerService.getCustomer(customerId).orElseThrow(NotFoundException::new);
     }
 }
