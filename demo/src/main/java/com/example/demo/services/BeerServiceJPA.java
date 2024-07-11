@@ -62,8 +62,15 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public void deleteBeerById(UUID id) {
+    public Boolean deleteBeerById(UUID id) {
 
+        if (beerRepository.existsById(id)) {
+
+            beerRepository.deleteById(id);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
