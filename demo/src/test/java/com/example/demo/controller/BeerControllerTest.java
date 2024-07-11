@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.example.demo.controller.BeerController.BEER_PATH_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -88,7 +89,9 @@ class BeerControllerTest {
     void testUpdateBeer() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().getFirst();
 
-        mockMvc.perform(put("/api/v1/beer/" + beer.getId())
+        given(beerService.updateBeerById(any(), any())).willReturn(Optional.of(beer));
+
+        mockMvc.perform(put(BEER_PATH_ID, beer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(beer)))
@@ -130,7 +133,7 @@ class BeerControllerTest {
     void getBeerByIdNotFound() throws Exception {
         given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
 
-        mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()))
+        mockMvc.perform(get(BEER_PATH_ID, UUID.randomUUID()))
                 .andExpect(status().isNotFound());
     }
 
