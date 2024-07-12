@@ -1,18 +1,25 @@
 package com.example.demo.services;
 
+import com.example.demo.mappers.CustomerMapper;
+import com.example.demo.mappers.CustomerMapperImpl;
 import com.example.demo.model.CustomerDTO;
+import com.example.demo.repositories.CustomerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
+    private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
     private Map<UUID, CustomerDTO> customers;
 
-    public CustomerServiceImpl() {
+    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapperImpl customerMapperImpl, CustomerMapper customerMapper) {
+        this.customerMapper = customerMapper;
         this.customers = new HashMap<>();
 
         CustomerDTO customer1 = CustomerDTO.builder()
@@ -39,6 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
         customers.put(customer1.getId(), customer1);
         customers.put(customer2.getId(), customer2);
         customers.put(customer3.getId(), customer3);
+        this.customerRepository = customerRepository;
     }
 
     @Override
@@ -67,26 +75,41 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void updateCustomerById(UUID customerId, CustomerDTO customer) {
+    public Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO customer) {
         CustomerDTO existingCustomer = customers.get(customerId);
         existingCustomer.setName(customer.getName());
         existingCustomer.setLastModifiedDate(LocalDate.now());
 
-        customers.put(customer.getId(), existingCustomer);
+        CustomerDTO updatedCustomer = customers.put(customer.getId(), existingCustomer);
+        return Optional.ofNullable(updatedCustomer);
     }
 
     @Override
-    public void deleteCustomerById(UUID customerId) {
-        customers.remove(customerId);
+    public Boolean deleteCustomerById(UUID customerId) {
+        if (customerRepository.existsById(customerId)) {
+            customerRepository.deleteById(customerId);
+            return true;
+        }
+//        customers.remove(customerId);
+        return false;
     }
 
     @Override
-    public void updatePatchCustomerById(UUID customerId, CustomerDTO customer) {
+    public Optional<CustomerDTO> updatePatchCustomerById(UUID customerId, CustomerDTO customer) {
+        AtomicReference<Optional<CustomerDTO>> atomicReference = new AtomicReference<>();
+
         CustomerDTO existing = customers.get(customerId);
 
-        if (StringUtils.hasText(customer.getName())) {
-            existing.setName(customer.getName());
-        }
+        customerRepository.findById(customerId).ifPresentOrElse(foundCustomer -> {
+            if (StringUtils.hasText(customer.getName())) {
+                existing.setName(customer.getName());
+            }
+
+            atomicReference.set(Optional.of(customerMapper.customerToCustomerDTO(customerRepository.save(foundCustomer))));
+        }, () -> atomicReference.set(Optional.empty()));
+
+        return atomicReference.get();
+
     }
 
     @Override
