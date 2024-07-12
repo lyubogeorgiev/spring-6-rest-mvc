@@ -61,6 +61,8 @@ public class CustomerServiceJPA implements CustomerService {
             customerRepository.deleteById(customerId);
             return true;
         }
+
+        return false;
     }
 
     @Override
