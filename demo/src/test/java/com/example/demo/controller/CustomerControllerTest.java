@@ -45,10 +45,10 @@ class CustomerControllerTest {
     @Captor
     ArgumentCaptor<CustomerDTO> customerArgumentCaptor;
 
-    @BeforeEach
-    void setUp() throws Exception {
-        customerServiceImpl = new CustomerServiceImpl();
-    }
+//    @BeforeEach
+//    void setUp() throws Exception {
+//        customerServiceImpl = new CustomerServiceImpl();
+//    }
 
     @Test
     void testPatchCustomer() throws Exception {
